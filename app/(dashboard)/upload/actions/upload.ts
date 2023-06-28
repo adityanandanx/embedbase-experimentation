@@ -1,10 +1,9 @@
-// @ts-ignore
-import pdf from "pdf-parse/lib/pdf-parse";
-// import pdf from "pdf-parse";
+"use server";
+
 import embedbase from "@/lib/embedbase";
-import toBuffer from "../helpers/toBuffer";
 import { revalidatePath } from "next/cache";
 import { BatchAddDocument, splitText } from "embedbase-js";
+import parserInstance from "@/lib/axios/parserInstance";
 
 const uploadFiles = async (data: FormData) => {
   console.log("uploading data...");
@@ -12,21 +11,14 @@ const uploadFiles = async (data: FormData) => {
 
   if (!file) return;
 
-  let text: string;
-
-  switch (file.type as HTMLInputElement["accept"]) {
-    case "application/pdf":
-      const buf = toBuffer(await file.arrayBuffer());
-      text = (await pdf(buf)).text;
-      break;
-
-    case "text/plain":
-      text = await file.text();
-      break;
-
-    default:
-      throw new Error(`${file.type} type not allowed.`);
+  let text: string | null = null;
+  try {
+    const parserRes = await parserInstance.post("parse", data);
+    text = parserRes.data.text;
+  } catch (error) {
+    console.error(error);
   }
+  if (!text) throw new Error("BAD");
 
   const chunks = splitText(text);
   const documents: BatchAddDocument[] = await chunks.map(
