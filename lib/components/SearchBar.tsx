@@ -14,6 +14,8 @@ const SearchBar: FC<SearchBarProps> = ({}) => {
         type="text"
         name="q"
         id="q"
+        autoFocus
+        autoComplete="off"
       />
     </form>
   );

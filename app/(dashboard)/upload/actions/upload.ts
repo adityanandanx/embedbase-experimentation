@@ -20,15 +20,15 @@ const uploadFiles = async (data: FormData) => {
   }
   if (!text) throw new Error("BAD");
 
-  const chunks = splitText(text);
-  const documents: BatchAddDocument[] = await chunks.map(
-    ({ chunk, start, end }) => {
-      return {
-        data: chunk,
-        metadata: { path: file.name, chunk: [start, end] },
-      };
-    }
-  );
+  // const chunks = splitText(text);
+  // const documents: BatchAddDocument[] = await chunks.map(
+  //   ({ chunk, start, end }) => {
+  //     return {
+  //       data: chunk,
+  //       metadata: { path: file.name, chunk: [start, end] },
+  //     };
+  //   }
+  // );
 
   // await chunks.forEach(async ({ chunk, start, end }) => {
   //   await embedbase
@@ -37,7 +37,11 @@ const uploadFiles = async (data: FormData) => {
   //   console.log({ start, end });
   // });
 
-  await embedbase.dataset("brain-1").chunkAndBatchAdd(documents);
+  await embedbase
+    .dataset("brain-1")
+    .chunkAndBatchAdd([
+      { data: text, metadata: { path: file.name, chunk: ["none", "none2"] } },
+    ]);
 
   revalidatePath("/upload");
   console.log("upload complete");

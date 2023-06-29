@@ -17,9 +17,10 @@ const DocumentListItem: FC<DocumentListItemProps> = ({ doc }) => {
             <h1 className="text-sm">{doc.metadata?.path}</h1>
             <p className="text-xs opacity-50">{doc.id}</p>
           </div>
-          <p className="text-xs opacity-50">
+          {/* <p className="hidden sm:block text-xs opacity-50 font-mono">
             {doc.metadata?.chunk[0]} to {doc.metadata?.chunk[1]}
-          </p>
+            {doc.metadata?.path}
+          </p> */}
         </button>
       }
     >
