@@ -9,6 +9,22 @@ interface DocumentListProps {}
 
 const DocumentList: FC<DocumentListProps> = async ({}) => {
   const data = await embedbase.dataset("brain-1").list();
+  const grouped: { [path: string]: Document[]; trash: Document[] } = {
+    trash: [],
+  };
+
+  for (const doc of data) {
+    const path = doc.metadata?.path;
+    if (!path) {
+      grouped.trash.push(doc);
+      return;
+    }
+    if (grouped[path]) {
+      grouped[path].push(doc);
+    } else {
+      grouped[path] = [doc];
+    }
+  }
 
   // const getGroupedData = (data: Document[]) => {
   //   const groupedData: Map<string, Document[]> = new Map();
@@ -47,9 +63,24 @@ const DocumentList: FC<DocumentListProps> = async ({}) => {
           </div>
         );
       })} */}
-      {data.map((doc) => (
+      {/* {data.map((doc) => (
         <DocumentListItem key={doc.hash} doc={doc} />
-      ))}
+      ))} */}
+
+      {Object.keys(grouped).map((path) => {
+        const group = grouped[path];
+        if (!group || group.length === 0) return null;
+        return (
+          <div key={path} className="my-10 w-full flex flex-col">
+            <h1 className="text-2xl truncate mb-2">{path}</h1>
+            <div className="flex flex-col min-h-0 max-h-[256px] scrollbar">
+              {group.map((doc) => {
+                return <DocumentListItem key={doc.hash} doc={doc} />;
+              })}
+            </div>
+          </div>
+        );
+      })}
 
       {data.length > 0 && (
         <form action={deleteAllDocuments}>

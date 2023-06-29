@@ -6,4 +6,21 @@
     .input {
         @apply bg-zinc-100 dark:bg-zinc-800 px-4 py-2 rounded outline-none focus:ring-1 ring-zinc-500;
     }
+    .scrollbar {
+        scrollbar-width: thin;
+        /* scrollbar-color:  transparent; */
+        @apply overflow-auto;
+    }
+
+    .scrollbar::-webkit-scrollbar {
+        @apply w-2;
+    }
+
+    .scrollbar::-webkit-scrollbar-track {
+        @apply bg-transparent;
+    }
+
+    .scrollbar::-webkit-scrollbar-thumb {
+        @apply bg-white/50 rounded-full transition-opacity;
+    }
 }

@@ -39,9 +39,7 @@ const uploadFiles = async (data: FormData) => {
 
   await embedbase
     .dataset("brain-1")
-    .chunkAndBatchAdd([
-      { data: text, metadata: { path: file.name, chunk: ["none", "none2"] } },
-    ]);
+    .chunkAndBatchAdd([{ data: text, metadata: { path: file.name } }]);
 
   revalidatePath("/upload");
   console.log("upload complete");
