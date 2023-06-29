@@ -5,7 +5,7 @@ import { createClient } from "embedbase-js";
 const apiKey = process.env.EMBEDBASE_API_KEY!;
 // this is using the hosted instance
 const url = process.env.EMBEDBASE_URL!;
-console.log(apiKey, url);
+console.log(url);
 
 const embedbase = createClient(url, apiKey);
 
