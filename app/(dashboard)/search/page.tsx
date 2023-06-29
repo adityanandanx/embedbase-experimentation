@@ -10,16 +10,13 @@ interface SearchPageProps {
 }
 
 const SearchPage: FC<SearchPageProps> = async ({ searchParams }) => {
-  if (!searchParams?.q) {
-    console.log("No Query provided");
-    redirect("/");
-  }
-  const data = await embedbase.dataset("brain-1").search(searchParams.q);
+  const data = searchParams?.q
+    ? await embedbase.dataset("brain-1").search(searchParams.q)
+    : [];
   return (
     <main>
       <SearchBar />
       <div className="p-10 max-w-3xl w-full mx-auto">
-        {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
         {data.map((searchData) => (
           <div key={searchData.hash} className="flex flex-col mb-10">
             {/* <h1 className="text-2xl font-bold">{searchData.metadata?.path}</h1> */}

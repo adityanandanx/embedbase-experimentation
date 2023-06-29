@@ -10,11 +10,6 @@ interface UploadPageProps {}
 const UploadPage: FC<UploadPageProps> = ({}) => {
   return (
     <main className="w-full h-full max-w-3xl m-auto mt-10">
-      <Link href={"/"} className="mb-5">
-        <Button variant={"tertiary"}>
-          <MdChevronLeft className="text-4xl" />
-        </Button>
-      </Link>
       <FileUploader />
       <Suspense fallback={<>Fetching your documents...</>}>
         <DocumentList />
