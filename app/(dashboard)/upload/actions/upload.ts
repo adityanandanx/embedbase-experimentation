@@ -4,6 +4,7 @@ import embedbase from "@/lib/embedbase";
 import { revalidatePath } from "next/cache";
 import { BatchAddDocument, splitText } from "embedbase-js";
 import parserInstance from "@/lib/axios/parserInstance";
+import { SplitTextChunk } from "embedbase-js/dist/module/split/types";
 
 const uploadFiles = async (data: FormData) => {
   console.log("uploading data...");
@@ -12,13 +13,23 @@ const uploadFiles = async (data: FormData) => {
   if (!file) return;
 
   let text: string | null = null;
+  let documents: BatchAddDocument[] = [];
+
   try {
-    const parserRes = await parserInstance.post("parse", data);
-    text = parserRes.data.text;
+    const parserRes = await parserInstance.post(`parse?split=${true}`, data);
+    const chunks: SplitTextChunk[] = parserRes.data.chunks;
+    documents = chunks.map((chunk) => {
+      return {
+        data: chunk.chunk,
+        metadata: { path: file.name, start: chunk.start, end: chunk.end },
+      };
+    });
+    console.log(documents.length);
   } catch (error) {
     console.error(error);
   }
-  if (!text) throw new Error("BAD");
+  if (!text && documents.length === 0)
+    throw new Error("No text returned by the parsing backend.");
 
   // const chunks = splitText(text);
   // const documents: BatchAddDocument[] = await chunks.map(
@@ -37,9 +48,8 @@ const uploadFiles = async (data: FormData) => {
   //   console.log({ start, end });
   // });
 
-  await embedbase
-    .dataset("brain-1")
-    .chunkAndBatchAdd([{ data: text, metadata: { path: file.name } }]);
+  await embedbase.dataset("brain-1").batchAdd(documents);
+  // .chunkAndBatchAdd([{ data: text, metadata: { path: file.name } }]);
 
   revalidatePath("/upload");
   console.log("upload complete");
